@@ -1,5 +1,8 @@
 *.py[cdo]
 venv/
 .idea/
+build/
+dist/
+*.egg-info/
 *.sublime-project
 *.sublime-workspace
