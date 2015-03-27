@@ -42,3 +42,7 @@ class ServerError(Exception):
     Reserved for implementation-defined server-errors.
     """
     pass
+
+
+class ClientError(Exception):
+    pass
