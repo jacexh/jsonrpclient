@@ -42,7 +42,8 @@ class _Method(object):
 
     def __call__(self, *args, **kwargs):
         if all((args, kwargs)):
-            raise ValueError
+            raise ValueError('call rpc method with positional parameters '
+                             'or named parameters')
         client = self.client
         params = args if args else kwargs
         payload = dict(method=self.method, jsonrpc='2.0', params=params,
@@ -58,7 +59,7 @@ class _Method(object):
         try:
             resp_json = response.json()
         except ValueError:
-            raise ParseError('')
+            raise ParseError('invalid JSON-RPC response')
         else:
             for handler in client.json_handlers:
                 handler(resp_json)
