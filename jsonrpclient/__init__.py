@@ -2,6 +2,6 @@
 
 __version__ = 0.1
 
-from .client import JsonRPCClient
+from .client import JSONRPCClient
 from .error import (MethodNotFound, InternalError, InvalidParamsError,
                     InvalidRequestError, ParseError, ServerError, ClientError)

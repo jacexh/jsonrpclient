@@ -2,7 +2,7 @@
 
 import requests
 import unittest
-from jsonrpclient import JsonRPCClient
+from jsonrpclient import JSONRPCClient
 from jsonrpclient import InvalidRequestError, ServerError
 
 
@@ -11,15 +11,15 @@ class JsonRPCClientTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.url = 'http://localhost:4000/'
-        cls.client = JsonRPCClient(cls.url)
+        cls.client = JSONRPCClient(cls.url)
 
     def test_init(self):
-        client = JsonRPCClient(self.url)
+        client = JSONRPCClient(self.url)
         session = client.session
         self.assertTrue(isinstance(session, requests.sessions.Session))
 
         session = requests.Session()
-        client = JsonRPCClient(self.url, session)
+        client = JSONRPCClient(self.url, session)
         self.assertEqual(id(client.session), id(session))
 
     def test_call_add(self):

@@ -10,17 +10,15 @@ except (ImportError, SyntaxError):
     import json
 
 
-class JsonRPCClient(object):
+class JSONRPCClient(object):
 
-    def __init__(self, url, session=None, encoding='utf-8', rid=1, **kwargs):
+    def __init__(self, url, session=None, rid=1, **kwargs):
         self.url = url
         self.response_handlers = [status_checker]
         self.json_handlers = [json_checker]
-        self.encoding = encoding
         self.rpc_id = rid
         self.session = session if session else requests.session()
-        self.session.headers['content-type'] = 'application/json;' \
-                                               ' charset=%s' % encoding
+
         self.intercept_func = None
         self.kwargs = kwargs
 
@@ -51,7 +49,7 @@ class _Method(object):
         if self.is_notification:
             payload.pop('id', None)
 
-        response = client.session.post(client.url, data=json.dumps(payload),
+        response = client.session.post(client.url, json=payload,
                                        **client.kwargs)
 
         for handler in client.response_handlers:
