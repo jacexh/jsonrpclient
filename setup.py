@@ -24,4 +24,4 @@ setup(
     ],
     long_description=open(
         os.path.join(os.path.dirname(__file__), "README.rst"), 'r').read(),
-    install_requires=["requests>=2.5.0", "simplejson>=3.5.0"])
+    install_requires=["requests>=2.5.0"])

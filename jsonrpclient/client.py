@@ -4,11 +4,6 @@ import requests
 from .handler import status_checker, json_checker
 from .error import ParseError
 
-try:
-    import simplejson as json
-except (ImportError, SyntaxError):
-    import json
-
 
 class JSONRPCClient(object):
 
