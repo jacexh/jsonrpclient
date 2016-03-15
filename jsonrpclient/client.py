@@ -7,57 +7,49 @@ from .error import ParseError
 
 class JSONRPCClient(object):
 
-    def __init__(self, url, session=None, rid=1, **kwargs):
+    def __init__(self, url, session=None, **kwargs):
         self.url = url
         self.response_handlers = [status_checker]
         self.json_handlers = [json_checker]
-        self.rpc_id = rid
-        self.session = session if session else requests.session()
+        self.rpc_id = 0
+        self.session = session if session else requests.Session()
 
-        self.intercept_func = None
-        self.kwargs = kwargs
+        self.interceptor = None
+        self.kwargs = kwargs.copy()
 
     def call(self, method, *args, **kwargs):
-        return _Method(self, method)(*args, **kwargs)
+        return self._call_json_rpc(method, False, *args, **kwargs)
 
     def notify(self, method, *args, **kwargs):
-        return _Method(self, method, is_notification=True)(*args, **kwargs)
+        return self._call_json_rpc(method, True, *args, **kwargs)
 
-    def __getattr__(self, method):
-        return _Method(self, method)
-
-
-class _Method(object):
-    def __init__(self, client, method, is_notification=False):
-        self.client = client
-        self.method = method
-        self.is_notification = is_notification
-
-    def __call__(self, *args, **kwargs):
+    def _call_json_rpc(self, method, is_notification=False, *args, **kwargs):
         if all((args, kwargs)):
-            raise ValueError('call rpc method with positional parameters '
-                             'or named parameters')
-        client = self.client
+            raise ValueError('call rpc method with positional parameters or named parameters')
+
         params = args if args else kwargs
-        payload = dict(method=self.method, jsonrpc='2.0', params=params,
-                       id=client.rpc_id)
-        if self.is_notification:
+        payload = dict(method=method, jsonrpc='2.0', params=params, id=self.rpc_id)
+        if is_notification:
             payload.pop('id', None)
 
-        response = client.session.post(client.url, json=payload,
-                                       **client.kwargs)
+        response = self.session.post(self.url, json=payload, **self.kwargs)
 
-        for handler in client.response_handlers:
+        for handler in self.response_handlers:
             handler(response)
         try:
             resp_json = response.json()
         except ValueError:
             raise ParseError('invalid JSON-RPC response')
         else:
-            for handler in client.json_handlers:
+            for handler in self.json_handlers:
                 handler(resp_json)
 
-            if client.intercept_func is None:
+            if self.interceptor is None:
                 return resp_json
             else:
-                return client.hijack_func(response, resp_json)
+                return self.interceptor(response, resp_json)
+
+    def __getattr__(self, item):
+        def method(*args, **kwargs):
+            return self.call(item, *args, **kwargs)
+        return method

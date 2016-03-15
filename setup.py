@@ -2,12 +2,11 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-import jsonrpclient
 import os
 
 setup(
     name='jsonrpclient',
-    version=jsonrpclient.__version__,
+    version=open("version", "r").read().strip(),
     packages=['jsonrpclient'],
     url='https://github.com/jacexh/jsonrpclient',
     license='MIT',
