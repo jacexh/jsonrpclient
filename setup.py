@@ -1,12 +1,16 @@
+import re
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-import os
+
+with open("jsonrpclient/__init__.py", 'r') as f:
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+                        f.read(), re.MULTILINE).group(1)
 
 setup(
     name='jsonrpclient',
-    version=open("version", "r").read().strip(),
+    version=version,
     packages=['jsonrpclient'],
     url='https://github.com/jacexh/jsonrpclient',
     license='MIT',
@@ -21,6 +25,4 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
-    long_description=open(
-        os.path.join(os.path.dirname(__file__), "README.rst"), 'r').read(),
-    install_requires=["requests>=2.5.0"])
+    install_requires=["requests>=2.9.0"])
