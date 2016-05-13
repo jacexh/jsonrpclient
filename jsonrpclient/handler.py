@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from error import *
+from requests.exceptions import HTTPError
 
 
 _ERROR_CODE_MAP = {
@@ -13,14 +14,10 @@ _ERROR_CODE_MAP = {
 
 
 def status_checker(resp):
-    status_code = resp.status_code
-    if status_code == 200:
+    if 200 <= resp.status_code < 300:
         return True
-    foo = str(status_code)[0]
-    if foo == '5':
-        raise ServerError
-    elif foo == '4':
-        raise ClientError
+    else:
+        raise HTTPError("{}".format(resp.status_code))
 
 
 def json_checker(json):
@@ -36,5 +33,4 @@ def json_checker(json):
 
     if -32099 <= err_code <= -32000:
         raise ServerError(err_msg)
-
     return False

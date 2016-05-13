@@ -33,6 +33,7 @@ class JSONRPCClient(object):
             payload.pop('id', None)
 
         response = self.session.post(self.url, json=payload, **self.kwargs)
+        response.raise_for_status()
 
         for handler in self.response_handlers:
             handler(response)
